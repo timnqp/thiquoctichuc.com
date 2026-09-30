@@ -1,0 +1,37 @@
+{
+  "name": "thiquoctichuc.com",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "build-types": "tsc --noEmit --pretty",
+    "sync-locales": "node scripts/generate-locales.mjs"
+  },
+  "dependencies": {
+    "@types/node": "^22.0.0",
+    "next": "^15.3.1",
+    "next-seo": "^6.6.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-markdown": "^9.0.3",
+    "remark-gfm": "^4.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "autoprefixer": "^10.4.2",
+    "cssnano": "^5.0.16",
+    "eslint": "^8.7.0",
+    "eslint-config-next": "^15.3.1",
+    "postcss": "^8.4.5",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=18.18"
+  }
+}
