@@ -31,6 +31,14 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
           Đăng ký miễn phí
         </Link>
       </p>
+      <p className="mt-2 text-sm text-gray-600">
+        <Link
+          href="/auth/forgot-password"
+          className="text-orange-600 hover:text-orange-800"
+        >
+          Quên mật khẩu?
+        </Link>
+      </p>
     </div>
   );
 }
