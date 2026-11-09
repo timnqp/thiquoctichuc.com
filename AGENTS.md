@@ -26,18 +26,27 @@ Central path constants: `src/config/routes.ts`. Prefer `routes.*` and `studyLess
 
 ## Architecture
 
+**Hybrid router** (Next.js 15): Pages Router for the public site (landing, study, practice); App Router for anything that needs auth (login, signup, dashboard, account, admin). Both coexist.
+
 ```
 content/citizenship/          Lesson markdown (vi only) + quiz-bank.json
 public/citizenship/flags/     Flag SVGs for lessons + quiz
 src/citizenship/              Feature logic (quiz, progress, practice UI)
 src/course/                   InfoView + CourseSidebar + types (study player)
-src/pages/                    Next.js routes (landing, study, practice)
+src/pages/                    Pages Router — public static pages
+src/app/                      App Router — auth + member/admin shells
+src/app/auth/                 Server actions, /auth/callback, /auth/logout
+src/app/(auth-shell)/         /auth/login, /auth/signup, /auth/verify (centered layout)
+src/app/(member)/             /dashboard, /account, /admin (auth-gated layout)
+src/lib/supabase/             Browser / server / admin / middleware Supabase clients
+src/middleware.ts             Refresh Supabase session + gate protected routes
 src/locales/                  Vietnamese UI strings (`vi.ts` only)
 src/ads/                      AdSense script + CitizenshipAdBanner
-src/navigation/               CitizenshipNavBar (no blog/courses/auth)
+src/navigation/               CitizenshipNavBar (adds "Đăng nhập" link)
+supabase/migrations/          Plain SQL, applied in filename order
 ```
 
-**No** next-auth, MongoDB, or paid courses — public static study + client-side practice only.
+**No** next-auth or MongoDB. Auth is **Supabase** (`@supabase/ssr`, cookies-based) — see `plan/v2-premium.md` for the full v2 roadmap (premium + coaching).
 
 ### Study flow
 
@@ -72,10 +81,25 @@ When content or copy changes on the main site submodule:
 
 Plan doc (product spec): `plan/australian-citizenship-test.md` (includes historical quinstowndotcom nav notes).
 
+## Supabase setup (M1)
+
+1. Create project in **Sydney (ap-southeast-2)**. Copy URL + anon key + service-role key.
+2. Fill `.env.local` from `.env.example` (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `APP_URL`).
+3. Apply migrations in `supabase/migrations/` (Supabase CLI `supabase db push`, or paste each `.sql` into SQL Editor).
+4. **Auth settings** — Authentication → URL Configuration:
+   - Site URL = `APP_URL` (e.g. `http://localhost:3000`, prod: `https://thiquoctichuc.com`).
+   - Redirect URLs allowlist: `${APP_URL}/auth/callback`.
+5. Email confirmation: on/off by taste. If **on**, signup goes to `/auth/verify` and the confirmation email returns to `/auth/callback?next=…`.
+6. First admin (after signing yourself up):
+   ```sql
+   update public.profiles set role = 'admin'
+   where id = (select id from auth.users where email = 'you@example.com');
+   ```
+
 ## Launch checklist
 
 1. Vercel project rooted at this repo; custom domain **thiquoctichuc.com**.
-2. Env: `NEXT_PUBLIC_GA_MEASUREMENT_ID`, AdSense vars.
+2. Env: Supabase vars, `APP_URL`, `NEXT_PUBLIC_GA_MEASUREMENT_ID`, AdSense vars.
 3. Replace `public/assets/icons/logo.png` and favicons for the brand.
 4. SEO defaults: `src/config/appConfig.ts` and `src/locales/*` (`site_name`, `site_title`).
 5. Deploy and verify all static paths build (study lesson IDs from `STUDY_ITEM_IDS`).

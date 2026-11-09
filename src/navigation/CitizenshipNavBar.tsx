@@ -54,6 +54,12 @@ const CitizenshipNavBar = () => {
                 {item.name}
               </Link>
             ))}
+            <Link
+              href="/auth/login"
+              className="text-orange-600 hover:text-orange-800 font-medium"
+            >
+              Đăng nhập
+            </Link>
           </nav>
 
           <div className="md:hidden flex items-center gap-3">
@@ -81,6 +87,13 @@ const CitizenshipNavBar = () => {
                 {item.name}
               </Link>
             ))}
+            <Link
+              href="/auth/login"
+              className="py-2 text-orange-600 font-medium"
+              onClick={() => setOpen(false)}
+            >
+              Đăng nhập
+            </Link>
           </nav>
         ) : null}
       </Section>
