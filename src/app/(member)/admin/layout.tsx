@@ -1,7 +1,15 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 
 import { createClient } from '@/lib/supabase/server';
+
+const NAV = [
+  { href: '/admin', label: 'Tổng quan' },
+  { href: '/admin/users', label: 'Người dùng' },
+  { href: '/admin/coaching-requests', label: 'Coaching' },
+  { href: '/admin/tests', label: 'Đề thi' },
+];
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient();
@@ -21,5 +29,20 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     redirect('/dashboard');
   }
 
-  return <>{children}</>;
+  return (
+    <div className="space-y-6">
+      <nav className="flex flex-wrap gap-4 text-sm border-b border-gray-200 pb-3">
+        {NAV.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="text-gray-700 hover:text-orange-600"
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
+      {children}
+    </div>
+  );
 }

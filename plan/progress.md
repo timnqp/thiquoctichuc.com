@@ -133,9 +133,44 @@ Stripe price numbers still open — leave as "Liên hệ" or TBD, do not block M
 
 ---
 
+## 2026-11-10 (M3–M6 in one burst)
+
+Shipped linearly, each committed on its own:
+
+- **M3 (`e77c9df`)** — `/pricing` page (static) with Premium + Coaching cards, FAQ, `?from=<test_id>` capture → sessionStorage. Reusable `UpgradeCta` dropped on landing + `/practice/result`. Analytics: `pricing_view`, `upgrade_click`, `coaching_click`.
+- **M4 (`9ee86a3`)** — Migration `0003_coaching_and_audit.sql` (coaching_requests anon-insert + admin-read; audit_log admin+service_role). `/coaching` App Router form (honeypot + length caps, attaches `user_id` if signed in). `/admin/coaching-requests` inbox: status transitions (new ↔ contacted ↔ declined), attach-user-by-email via `auth.admin.listUsers`, grant-6-months action inserts access_grants + logs to audit_log. Email notification stubbed → M7.
+- **M5 (`acb7aaa`)** — Migration `0004_attempts_and_progress.sql` (attempts + lesson_progress; owner RLS). Shared server actions: `updateDisplayName`, `recordAttempt` (server-side scoring via `evaluateCitizenshipTest`; RLS gates question access), `recordLessonCompletion`, `mergeLocalProgress`. `/account` rebuilt with display-name editor + grant history. `/dashboard` rewritten with 3 KPI cards + real recent-attempts + `LocalMerge` one-shot sync. `/dashboard/tests` unified list (free → `/practice`, premium entitled → runner, else `/pricing`). `/dashboard/tests/[id]` premium runner reuses `PracticeRunner` via 'use client' wrapper + submits attempts via server action. Known limitation: premium runner shares the free-tier `citizenship:practice:attempt` localStorage key — namespacing deferred.
+- **M6 (this commit)** — Migration `0005_student_notes.sql` (admin-only). Admin shared nav in layout. `/admin` KPI tiles (signups 7d/30d, active premium/coaching, expiring-in-7d, coaching pending). `/admin/users` paginated list with search + filter (premium / coaching / expiring). `/admin/users/[id]` detail with grant/revoke/custom-grant, add/delete student notes, attempts, lessons, access history. `/admin/tests` with inline free⇄premium toggle (fires `audit_log` via service-role and revalidates `/practice`). Full CRUD for questions remains an editor pass — `quiz-bank.json` + `npm run seed-quiz` stays the canonical content path for now.
+
+### Open items after M6
+
+- **Supabase project still not provisioned** — all M2–M6 code paths fall back cleanly when env vars are absent; nothing has hit a real DB yet.
+- **Password reset** — not built; can slip into early-M7 or defer.
+- **Question-level admin CRUD** — deferred past M6; `quiz-bank.json` remains source of truth.
+- **Pre-expiry reminder email + Stripe webhook + welcome email + rate-limit** — all lands in M7 (hard-blocked on Stripe account + email provider choice).
+
+### Next session — M7 (Payments + emails)
+
+Per `plan/v2-premium.md` §8 M7 — hard-blocked on:
+1. Stripe account + published prices (AUD amount, GST, invoice name/ABN).
+2. Email provider choice (Mailjet vs SES) + `src/lib/email/` port from appspa.
+
+Once unblocked:
+- Stripe product "Premium — 3 months".
+- Checkout session route handler (App Router) with `metadata.user_id`.
+- Supabase Edge Function `stripe-webhook` (signature verify + idempotency on `stripe_session_id`); writes `access_grants` with `source='stripe'`.
+- Email templates: welcome, access granted, access expiring in 7d, coaching request received (user) + admin notification.
+- Scheduled Edge Function (or cron) to send "expiring in 7d" nightly.
+
+---
+
 ## Changelog pointers
 
 - `6953b02` initial import (Vietnamese-only, thiquoctichuc.com branding)
 - `9163df3` plan/v2-premium.md
 - `7c4ad24` M1 — Supabase SSR + App Router hybrid
-- *(this session)* M2 — tests/questions tables, seeder, `/practice` ISR with lock gating
+- `8a355e6` M2 — tests/questions tables, seeder, `/practice` ISR with lock gating
+- `e77c9df` M3 — pricing + UpgradeCta
+- `9ee86a3` M4 — coaching lead flow + admin inbox + audit log
+- `acb7aaa` M5 — member portal: attempts, dashboard, premium runner, local merge
+- *(this commit)* M6 — admin KPIs, users, grants, notes, tests tier-toggle

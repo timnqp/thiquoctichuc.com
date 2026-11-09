@@ -18,7 +18,7 @@ Or paste the SQL into Supabase Studio → SQL Editor for a one-off.
 - `0002_tests_and_questions.sql` — M2: `tests`, `questions`, `is_entitled()` helper, RLS (public reads free tests; premium gated by `is_entitled()`).
 - `0003_coaching_and_audit.sql` — M4: `coaching_requests` (anon insert, admin read/write) + `audit_log` (admin read, admin/service_role insert). `audit_log` was originally scheduled for M8 but M4's grant action needs it.
 - `0004_attempts_and_progress.sql` — M5: `attempts` + `lesson_progress`. Owner-only RLS (user CRUDs own rows; admin reads all).
-- *(later)* `0005_student_notes.sql` — M6
+- `0005_student_notes.sql` — M6: admin-only private notes about a user (the target user cannot read).
 
 ## Making a user admin
 
