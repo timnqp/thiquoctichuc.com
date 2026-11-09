@@ -6,14 +6,15 @@ import { routes } from '../config/routes';
 import { useTranslation } from '../context/LanguageContext';
 import { BuyMeACoffee } from './BuyMeACoffee';
 import { DerivedFromOcb } from './DerivedFromOcb';
-import { firstPracticeTestId, quizBank } from './quizBank';
-import type { PracticeTest } from './types';
+import type { PracticeTestSummary } from './practiceCatalog';
 import { saveAttempt } from './useLocalProgress';
 
 const TIME_LIMIT_MS = 45 * 60 * 1000;
 
 type PracticeWelcomeProps = {
+  tests: PracticeTestSummary[];
   onStart: (testId: string) => void;
+  onLockedClick: (testId: string) => void;
 };
 
 export function startAttempt(testId: string) {
@@ -29,46 +30,98 @@ export function startAttempt(testId: string) {
   });
 }
 
+function firstFreeTestId(tests: PracticeTestSummary[]): string {
+  const firstFree = tests.find((t) => t.tier === 'free');
+  return firstFree?.id ?? tests[0]?.id ?? 'test-1';
+}
+
+// Inline Vietnamese premium copy — not maintained via `sync-locales`.
+const PREMIUM_BADGE = 'Chỉ dành cho Premium';
+
+function LockIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="w-4 h-4 inline-block text-gray-500"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="11" width="18" height="11" rx="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+  );
+}
+
 function TestList({
   tests,
   onStart,
+  onLockedClick,
   basicLabel,
   advancedLabel,
 }: {
-  tests: PracticeTest[];
+  tests: PracticeTestSummary[];
   onStart: (testId: string) => void;
+  onLockedClick: (testId: string) => void;
   basicLabel: string;
   advancedLabel: string;
 }) {
   return (
     <ul className="divide-y border rounded-lg">
-      {tests.map((test) => (
-        <li key={test.id}>
-          <button
-            type="button"
-            className="w-full text-left px-4 py-3 hover:bg-orange-50 flex justify-between gap-3"
-            onClick={() => onStart(test.id)}
-          >
-            <span className="text-gray-800">{test.title}</span>
-            <span className="text-xs uppercase tracking-wide text-gray-500">
-              {test.difficulty === 'basic' ? basicLabel : advancedLabel}
-            </span>
-          </button>
-        </li>
-      ))}
+      {tests.map((test) => {
+        const locked = test.tier === 'premium';
+        return (
+          <li key={test.id}>
+            <button
+              type="button"
+              className={`w-full text-left px-4 py-3 flex justify-between items-center gap-3 ${
+                locked ? 'hover:bg-gray-50' : 'hover:bg-orange-50'
+              }`}
+              onClick={() =>
+                locked ? onLockedClick(test.id) : onStart(test.id)
+              }
+              aria-label={
+                locked ? `${test.title} — ${PREMIUM_BADGE}` : test.title
+              }
+            >
+              <span className="flex items-center gap-2 text-gray-800">
+                {locked ? <LockIcon /> : null}
+                <span>{test.title}</span>
+                {locked ? (
+                  <span className="text-[11px] uppercase tracking-wide px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200">
+                    {PREMIUM_BADGE}
+                  </span>
+                ) : null}
+              </span>
+              <span className="text-xs uppercase tracking-wide text-gray-500">
+                {test.difficulty === 'basic' ? basicLabel : advancedLabel}
+              </span>
+            </button>
+          </li>
+        );
+      })}
     </ul>
   );
 }
 
-export const PracticeWelcome = ({ onStart }: PracticeWelcomeProps) => {
+export const PracticeWelcome = ({
+  tests,
+  onStart,
+  onLockedClick,
+}: PracticeWelcomeProps) => {
   const { t } = useTranslation();
-  const { basicTests, advancedTests } = useMemo(() => {
-    const basic = quizBank.tests.filter((test) => test.difficulty === 'basic');
-    const advanced = quizBank.tests.filter(
-      (test) => test.difficulty === 'advanced'
-    );
-    return { basicTests: basic, advancedTests: advanced };
-  }, []);
+  const { basicTests, advancedTests, startTestId } = useMemo(() => {
+    const basic = tests.filter((test) => test.difficulty === 'basic');
+    const advanced = tests.filter((test) => test.difficulty === 'advanced');
+    return {
+      basicTests: basic,
+      advancedTests: advanced,
+      startTestId: firstFreeTestId(tests),
+    };
+  }, [tests]);
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -98,7 +151,7 @@ export const PracticeWelcome = ({ onStart }: PracticeWelcomeProps) => {
         <button
           type="button"
           className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-10 rounded-lg transition-colors"
-          onClick={() => onStart(firstPracticeTestId())}
+          onClick={() => onStart(startTestId)}
         >
           {t('cit_practice_start')}
         </button>
@@ -121,6 +174,7 @@ export const PracticeWelcome = ({ onStart }: PracticeWelcomeProps) => {
       <TestList
         tests={basicTests}
         onStart={onStart}
+        onLockedClick={onLockedClick}
         basicLabel={t('cit_practice_basic')}
         advancedLabel={t('cit_practice_advanced')}
       />
@@ -130,6 +184,7 @@ export const PracticeWelcome = ({ onStart }: PracticeWelcomeProps) => {
       <TestList
         tests={advancedTests}
         onStart={onStart}
+        onLockedClick={onLockedClick}
         basicLabel={t('cit_practice_basic')}
         advancedLabel={t('cit_practice_advanced')}
       />

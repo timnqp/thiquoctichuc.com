@@ -100,8 +100,42 @@ Scope (from `plan/v2-premium.md` §8 M2):
 
 ---
 
+## 2026-11-10 (M2)
+
+### Shipped
+
+- **M2 content model + seeding:**
+  - SQL migration `supabase/migrations/0002_tests_and_questions.sql` — `tests`, `questions`, `is_entitled(uid uuid default auth.uid())` helper, RLS. `tests` metadata is publicly readable so the practice list can render lock icons; `questions` select is gated to `tier='free'` OR `is_entitled()`. Admin has full access via `is_admin()`.
+  - Seeder `scripts/seed-quiz.mjs` (`npm run seed-quiz`) — reads `content/citizenship/quiz-bank.json`, assigns `tier='free'` to the first 2 basic + first 2 advanced tests (test-1, test-2, test-8, test-9), rest `premium`. Idempotent upsert on `id`. Loads env from `.env.local` (no dotenv dep).
+  - `/practice` rewritten as ISR (`revalidate: 3600`) — `getStaticProps` calls `loadPracticeCatalog()` which reads from Supabase (anon key, `select` on `tests`) and **falls back to local `quiz-bank.json`** if env is missing or the table is unseeded, so dev + current prod stay green.
+  - `PracticeWelcome` now takes `tests: PracticeTestSummary[]` + `onLockedClick`. Premium rows render a lock icon + "Chỉ dành cho Premium" badge and route to `/pricing?from=<test_id>` (page itself ships in M3). "Bắt đầu với đề 1" button auto-targets the first **free** test.
+  - New analytics event `cit_practice_locked_click`.
+  - `src/citizenship/quizBank.ts` untouched — still powers `/practice/run` + `/practice/result` per plan.
+  - Build green: `/practice` now 4.31 kB (ISR 1h), 32 App Router + Pages SSG pages, middleware 95.1 kB.
+
+### To seed a Supabase project
+
+1. Apply `supabase/migrations/0002_tests_and_questions.sql` (via `supabase db push` or SQL Editor).
+2. Set `NEXT_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`.
+3. `npm run seed-quiz` — upserts 14 tests + 280 questions.
+4. `/practice` picks up the DB rows on next ISR refresh (or next build).
+
+### Next session — M3 (Pricing + CTA)
+
+Per `plan/v2-premium.md` §8 M3:
+
+1. `/pricing` page (Pages Router static OK) — two cards: Premium (3 months) and Coaching (6 months). Pull copy from plan.
+2. Reusable `<UpgradeCta />` block — place on landing and `/practice/result`.
+3. Analytics events: `pricing_view`, `upgrade_click`, `coaching_click`.
+4. Accept `?from=<test_id>` on `/pricing` and stash it for return-after-purchase (M7 will consume it).
+
+Stripe price numbers still open — leave as "Liên hệ" or TBD, do not block M3.
+
+---
+
 ## Changelog pointers
 
 - `6953b02` initial import (Vietnamese-only, thiquoctichuc.com branding)
 - `9163df3` plan/v2-premium.md
 - `7c4ad24` M1 — Supabase SSR + App Router hybrid
+- *(this session)* M2 — tests/questions tables, seeder, `/practice` ISR with lock gating

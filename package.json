@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "build-types": "tsc --noEmit --pretty",
-    "sync-locales": "node scripts/generate-locales.mjs"
+    "sync-locales": "node scripts/generate-locales.mjs",
+    "seed-quiz": "node scripts/seed-quiz.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
