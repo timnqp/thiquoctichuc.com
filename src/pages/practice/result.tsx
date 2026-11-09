@@ -6,6 +6,7 @@ import { trackCitEvent } from '../../citizenship/analytics';
 import { evaluateCitizenshipTest } from '../../citizenship/evaluateCitizenshipTest';
 import { PracticeResultView } from '../../citizenship/PracticeResult';
 import { getPracticeTest } from '../../citizenship/quizBank';
+import { UpgradeCta } from '../../citizenship/UpgradeCta';
 import type { StoredResult } from '../../citizenship/useLocalProgress';
 import { loadLastResult } from '../../citizenship/useLocalProgress';
 import { AppConfig } from '../../config/appConfig';
@@ -78,6 +79,9 @@ const PracticeResultPage = () => {
             answers={stored.answers}
             result={result}
           />
+          <div className="max-w-3xl mx-auto mt-10">
+            <UpgradeCta placement="result" fromTestId={stored.testId} />
+          </div>
         </div>
       </Section>
       <Footer />

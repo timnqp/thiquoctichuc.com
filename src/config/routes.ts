@@ -9,7 +9,14 @@ export const routes = {
   practice: '/practice',
   practiceRun: '/practice/run',
   practiceResult: '/practice/result',
+  pricing: '/pricing',
+  coaching: '/coaching',
 } as const;
+
+/** Build a /pricing link that carries the originating test id for return-after-purchase. */
+export function pricingHrefFromTest(testId: string): string {
+  return `${routes.pricing}?from=${encodeURIComponent(testId)}`;
+}
 
 /** Trailing slash matches next.config.js `trailingSlash: true`. */
 export function studyLessonHref(id: string): string {

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { CitizenshipAdBanner } from '../ads/AdUnit';
 import { BuyMeACoffee } from '../citizenship/BuyMeACoffee';
 import { DerivedFromOcb } from '../citizenship/DerivedFromOcb';
+import { UpgradeCta } from '../citizenship/UpgradeCta';
 import { trackCitEvent } from '../citizenship/analytics';
 import { routes } from '../config/routes';
 import { useTranslation } from '../context/LanguageContext';
@@ -50,6 +51,9 @@ const LandingPage = () => {
               {t('cit_practice_has_explanations')}
             </p>
           </Link>
+        </div>
+        <div className="mt-8">
+          <UpgradeCta placement="landing" />
         </div>
         <CitizenshipAdBanner />
         <div className="mt-10">
