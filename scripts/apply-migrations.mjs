@@ -31,7 +31,7 @@ const args = [
   dbUrl,
   '--workdir',
   repoRoot,
-  '--yes',
+  '--yes', // non-interactive (required for agent/CI)
 ];
 if (dryRun) args.push('--dry-run');
 

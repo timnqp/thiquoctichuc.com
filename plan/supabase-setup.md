@@ -106,11 +106,15 @@ You should see at least: `access_grants`, `attempts`, `audit_log`, `coaching_req
    (Project ref is in **Settings → General → Reference ID**)
 4. Add to `.env.local`:
 
-   ```
-   DATABASE_URL=postgresql://postgres.YOUR_REF:YOUR_DB_PASSWORD@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres
-   ```
+   Paste the **exact** URI from **Settings → Database → Connection string → URI (Session mode)**.
 
-   Get the exact URI from **Settings → Database → Connection string → URI** (Session mode, pooler).
+   **Important:** use the **pooler** host (`*.pooler.supabase.com`), not `db.*.supabase.co` (often IPv6-only and fails from some networks). Newer projects may use `aws-1-<region>` not `aws-0-<region>` — copy from the dashboard, do not guess the region.
+
+   Example shape (your host may differ):
+
+   ```
+   postgresql://postgres.YOUR_REF:YOUR_PASSWORD@aws-1-ap-southeast-2.pooler.supabase.com:5432/postgres
+   ```
 5. From repo root:
 
    ```bash
