@@ -215,6 +215,23 @@ Check `/dashboard` — plan should show Premium + expiry.
 
 ---
 
+## Agent access (Cursor runs SQL for you)
+
+Once `.env.local` exists on your machine with **`DATABASE_URL`** (and keys for the app/seed), the agent can:
+
+| Command | What it does |
+|---------|----------------|
+| `npm run db:migrate` | Apply all pending files in `supabase/migrations/` |
+| `npm run db:sql -- "…"` | Run a one-off query |
+| `npm run db:sql -- --file path.sql` | Run a SQL file (e.g. under `supabase/adhoc/`) |
+| `npm run seed-quiz` | Upsert tests/questions from JSON |
+
+You create the Supabase project and paste secrets into `.env.local` **once**; do not paste passwords in chat. Tell the agent: *“`.env.local` is ready — run migrations and seed.”*
+
+See also `AGENTS.md` → **Agent: run Supabase SQL from the repo**.
+
+---
+
 ## What’s next after setup
 
 - **M7:** Stripe (premium) + email (Mailjet/SES) — see `plan/progress.md`.

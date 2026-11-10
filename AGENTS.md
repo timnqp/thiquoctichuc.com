@@ -85,7 +85,7 @@ Plan doc (product spec): `plan/australian-citizenship-test.md` (includes histori
 
 1. Create project in **Sydney (ap-southeast-2)**. Copy URL + anon key + service-role key.
 2. Fill `.env.local` from `.env.example` (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `APP_URL`).
-3. Apply migrations in `supabase/migrations/` (Supabase CLI `supabase db push`, or paste each `.sql` into SQL Editor).
+3. Apply migrations: put `DATABASE_URL` (Session pooler URI) in `.env.local`, then `npm run db:migrate` (wraps `supabase db push --db-url`). Or paste each file in SQL Editor.
 4. **Auth settings** — Authentication → URL Configuration:
    - Site URL = `APP_URL` (e.g. `http://localhost:3000`, prod: `https://thiquoctichuc.com`).
    - Redirect URLs allowlist: `${APP_URL}/auth/callback`.
@@ -95,6 +95,34 @@ Plan doc (product spec): `plan/australian-citizenship-test.md` (includes histori
    update public.profiles set role = 'admin'
    where id = (select id from auth.users where email = 'you@example.com');
    ```
+
+## Agent: run Supabase SQL from the repo
+
+The user keeps secrets only in **`.env.local`** (gitignored). The agent can apply migrations and run queries when that file exists and network is allowed.
+
+**Required in `.env.local` for DB commands:**
+
+| Variable | Purpose |
+|----------|---------|
+| `DATABASE_URL` | Session pooler Postgres URI — **required** for `db:migrate` / `db:sql` |
+| `NEXT_PUBLIC_SUPABASE_URL` | App + anon client |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | App |
+| `SUPABASE_SERVICE_ROLE_KEY` | `npm run seed-quiz`, server admin actions |
+| `APP_URL` | Auth redirect base |
+
+**Commands (agent runs from repo root):**
+
+```bash
+npm run db:migrate              # apply supabase/migrations/*.sql (supabase db push)
+npm run db:migrate -- --dry-run
+npm run db:sql -- "select id, tier from public.tests limit 5"
+npm run db:sql -- --file supabase/adhoc/example.sql
+npm run seed-quiz               # needs SUPABASE_SERVICE_ROLE_KEY
+```
+
+Prerequisites: **Supabase CLI** on PATH (`which supabase`). User doc: `plan/supabase-setup.md`.
+
+**Safety:** Never commit `.env.local`. Prefer migrations in `supabase/migrations/` for schema changes; use `db:sql` for one-off fixes or admin grants. Destructive SQL only when the user explicitly asks.
 
 ## Launch checklist
 
