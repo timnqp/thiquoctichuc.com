@@ -144,7 +144,7 @@ Shipped linearly, each committed on its own:
 
 ### Open items after M6
 
-- **Supabase project still not provisioned** — all M2–M6 code paths fall back cleanly when env vars are absent; nothing has hit a real DB yet.
+- **Supabase project still not provisioned** — all M2–M6 code paths fall back cleanly when env vars are absent; nothing has hit a real DB yet. **Step-by-step:** `plan/supabase-setup.md`.
 - **Password reset** — not built; can slip into early-M7 or defer.
 - **Question-level admin CRUD** — deferred past M6; `quiz-bank.json` remains source of truth.
 - **Pre-expiry reminder email + Stripe webhook + welcome email + rate-limit** — all lands in M7 (hard-blocked on Stripe account + email provider choice).
