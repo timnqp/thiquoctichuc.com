@@ -1,19 +1,23 @@
+'use client';
+
 import { useState } from 'react';
 
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 
 import { routes } from '../config/routes';
 import { useTranslation } from '../context/LanguageContext';
 import { Section } from '../layout/Section';
 import { Logo } from '../templates/Logo';
 
-type NavItem = { name: string; uri: string; match: (pathname: string) => boolean };
+type NavItem = { name: string; uri: string; match: (p: string) => boolean };
+
+const isLoginPath = (pathname: string) =>
+  pathname === '/auth/login' || pathname.startsWith('/auth/login/');
 
 const CitizenshipNavBar = () => {
   const { t } = useTranslation();
-  const router = useRouter();
-  const pathname = router.pathname;
+  const pathname = usePathname() ?? '';
   const [open, setOpen] = useState(false);
 
   const items: NavItem[] = [
@@ -34,6 +38,8 @@ const CitizenshipNavBar = () => {
     },
   ];
 
+  const loginActive = isLoginPath(pathname);
+
   return (
     <header className="border-b border-gray-200 bg-white">
       <Section yPadding="py-4">
@@ -48,7 +54,9 @@ const CitizenshipNavBar = () => {
                 key={item.uri}
                 href={item.uri}
                 className={
-                  item.match(pathname) ? 'text-orange-600 font-medium' : 'hover:text-orange-600'
+                  item.match(pathname)
+                    ? 'text-orange-600 font-medium'
+                    : 'hover:text-orange-600'
                 }
               >
                 {item.name}
@@ -56,7 +64,11 @@ const CitizenshipNavBar = () => {
             ))}
             <Link
               href="/auth/login"
-              className="text-orange-600 hover:text-orange-800 font-medium"
+              className={
+                loginActive
+                  ? 'text-orange-600 font-medium'
+                  : 'hover:text-orange-600'
+              }
             >
               Đăng nhập
             </Link>
@@ -81,7 +93,9 @@ const CitizenshipNavBar = () => {
               <Link
                 key={item.uri}
                 href={item.uri}
-                className={`py-2 ${item.match(pathname) ? 'text-orange-600 font-medium' : ''}`}
+                className={`py-2 ${
+                  item.match(pathname) ? 'text-orange-600 font-medium' : ''
+                }`}
                 onClick={() => setOpen(false)}
               >
                 {item.name}
@@ -89,7 +103,9 @@ const CitizenshipNavBar = () => {
             ))}
             <Link
               href="/auth/login"
-              className="py-2 text-orange-600 font-medium"
+              className={`py-2 ${
+                loginActive ? 'text-orange-600 font-medium' : ''
+              }`}
               onClick={() => setOpen(false)}
             >
               Đăng nhập
