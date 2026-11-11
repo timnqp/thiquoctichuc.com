@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 
 import { createClient } from '@/lib/supabase/server';
+import { Logo } from '@/templates/Logo';
 
 import { LogoutButton } from './logout-button';
 
@@ -29,8 +30,8 @@ export default async function MemberLayout({ children }: { children: ReactNode }
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-gray-200 bg-white">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="font-fancy text-xl text-orange-600">
-            thiquoctichuc.com
+          <Link href="/">
+            <Logo />
           </Link>
           <nav className="flex items-center gap-4 text-sm">
             <Link href="/dashboard" className="text-gray-700 hover:text-orange-600">

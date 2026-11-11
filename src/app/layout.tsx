@@ -1,7 +1,14 @@
 import type { Metadata } from 'next';
+import { Dancing_Script } from 'next/font/google';
 import type { ReactNode } from 'react';
 
 import '../styles/global.css';
+
+const dancingScript = Dancing_Script({
+  subsets: ['latin'],
+  variable: '--font-fancy',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: {
@@ -18,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="vi">
+    <html lang="vi" className={dancingScript.variable}>
       <body className="antialiased text-gray-800 bg-white min-h-screen">
         {children}
       </body>

@@ -1,4 +1,5 @@
 export const AppConfig = {
+  brand_name: 'Quinn Ta',
   site_name: 'thiquoctichuc.com',
   title: 'thiquoctichuc.com · Học & thi thử',
   description:

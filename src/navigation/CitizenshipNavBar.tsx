@@ -38,7 +38,7 @@ const CitizenshipNavBar = () => {
     <header className="border-b border-gray-200 bg-white">
       <Section yPadding="py-4">
         <div className="flex items-center justify-between gap-4">
-          <Link href={routes.home} className="flex-shrink-0 max-w-[140px]">
+          <Link href={routes.home} className="flex-shrink-0">
             <Logo />
           </Link>
 

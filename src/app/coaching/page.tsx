@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { Logo } from '@/templates/Logo';
+
 import { CoachingForm } from './coaching-form';
 
 export const metadata = {
@@ -27,8 +29,8 @@ export default function CoachingPage() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <header className="border-b border-gray-200 bg-white">
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="font-fancy text-xl text-orange-600">
-            thiquoctichuc.com
+          <Link href="/">
+            <Logo />
           </Link>
           <Link
             href="/pricing"

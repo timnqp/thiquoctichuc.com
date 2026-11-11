@@ -1,5 +1,9 @@
+import { AppConfig } from '../config/appConfig';
+
 const Logo = () => (
-  <img src="/assets/icons/logo.png" alt="thiquoctichuc.com" width="100%" />
+  <span className="font-fancy text-xl text-orange-600 whitespace-nowrap">
+    {AppConfig.brand_name}
+  </span>
 );
 
 export { Logo };
