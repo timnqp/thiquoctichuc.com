@@ -6,6 +6,7 @@ import '../styles/global.css';
 
 const dancingScript = Dancing_Script({
   subsets: ['latin'],
+  weight: ['400', '700'],
   variable: '--font-fancy',
   display: 'swap',
 });

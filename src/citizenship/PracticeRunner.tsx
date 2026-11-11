@@ -2,13 +2,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Link from 'next/link';
 
-import { AppConfig } from '../config/appConfig';
 import { routes } from '../config/routes';
 import { useTranslation } from '../context/LanguageContext';
 import { CitizenshipAdBanner } from '../ads/AdUnit';
 import { BuyMeACoffee } from './BuyMeACoffee';
 import { QuestionFlag } from './CitizenshipFlags';
 import { DerivedFromOcb } from './DerivedFromOcb';
+import { Logo } from '../templates/Logo';
 import type { BankQuestion, PracticeAttempt } from './types';
 import { loadAttempt, saveAttempt } from './useLocalProgress';
 
@@ -151,9 +151,7 @@ export const PracticeRunner = ({ questions, onSubmit }: PracticeRunnerProps) => 
     <div className="min-h-screen flex flex-col bg-white text-gray-900">
       <div className="bg-[#FBEDE6] border-b border-gray-200 px-4 py-3 flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <span className="font-fancy text-xl text-orange-600">
-            {AppConfig.brand_name}
-          </span>
+          <Logo />
           <p className="text-sm text-gray-700 mt-1">
             Australian Citizenship practice
           </p>
