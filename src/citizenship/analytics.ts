@@ -1,9 +1,11 @@
+import { isGaEnabled } from '../analytics/gaConfig';
+
 type CitEventParams = Record<string, string | number | boolean>;
 
 function canSend(): boolean {
   return (
     typeof window !== 'undefined' &&
-    process.env.NODE_ENV === 'production' &&
+    isGaEnabled() &&
     typeof window.gtag === 'function'
   );
 }

@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import { Dancing_Script } from 'next/font/google';
 import type { ReactNode } from 'react';
 
+import { GaRouteChange } from '@/analytics/GaRouteChange';
+import { GoogleAnalytics } from '@/analytics/GoogleAnalytics';
+
 import '../styles/global.css';
 
 const dancingScript = Dancing_Script({
@@ -28,6 +31,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="vi" className={dancingScript.variable}>
       <body className="antialiased text-gray-800 bg-white min-h-screen">
+        <GoogleAnalytics />
+        <GaRouteChange />
         {children}
       </body>
     </html>
